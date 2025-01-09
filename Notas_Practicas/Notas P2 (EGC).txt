@@ -1,0 +1,122 @@
+--------------------------
+EJEMPLO TÍPICO DE WORKFLOW
+--------------------------
+
+name: Deploy to Render
+
+on:
+    push:
+      branches:
+        - main
+    pull_request:
+    	- main
+    	- build
+
+jobs:
+
+  deploy_job:
+    name: Name for example of a real job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Deploy to Render
+        env: deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl "$deploy_url"
+          
+  whatever_job:
+    name: Name for made-up example of average job 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Whatever name for this step 1
+        uses: actions/setup-python@v5
+      
+      - name: Create issue
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Monthly contributor report
+          token: ${{ secrets.GITHUB_TOKEN }}
+          content-filepath: ./contributors.md
+          assignees: davidgonmar
+          
+  job_with_strategy_and_services:
+    name: Name for example of job with strategy and services
+    runs-on: ubuntu-latest
+      
+    strategy:
+        fail-fast: false
+        matrix: python-version: ['3.11', '3.12']
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: uvlhub_root_password
+          MYSQL_DATABASE: uvlhubdb_test
+          MYSQL_USER: uvlhub_user
+          MYSQL_PASSWORD: uvlhub_password
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Whatever name for this step 2
+        run: docker push cargarmar18/uvlhub-egc:v1.0
+
+      - name: Set up Python
+	uses: actions/setup-python@v5
+	with:
+	  python-version: ${{ matrix.python-version }}
+          
+          
+          
+          
+          
+-----------------
+NOTAS ADICIONALES
+-----------------
+Si hacemos la estrategia matricial, importante acordarse de en python-version poner ${{ matrix.python-version }}
+
+Para poner una versión no exacta, por ejemplo, de Python:
+	 python-version: '3.x'
+Para versión de Ubuntu específica:
+	runs-on: ubuntu-22.04
+Para última versión de Ubuntu:
+	runs-on: ubuntu-latest
+	
+Si tengo que sacar un step fuera para ser su propio job, recordar incluir el name y el runs-on.
+	
+	
+	
+	
+	
+----------------------------------------------------
+WORKFLOW QUE HE ENCONTRADO PARA RELEASES AUTOMÁTICAS
+----------------------------------------------------
+name: Create release
+
+on:
+  push:
+    tags:
+      - "v*"
+      
+permissions:
+  contents: write
+  
+jobs:
+  release:
+    name: Release pushed tag
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${tag#v}" \
+              --generate-notes
+
