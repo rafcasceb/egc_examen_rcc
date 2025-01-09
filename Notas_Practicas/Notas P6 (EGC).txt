@@ -1,0 +1,92 @@
+Para ver las explicaciones línea por línea de vagrantfiles, de scripts de shell y de Ansible playbooks, en la práctica 6 aparecen varios casos. Aquí por ejemplo: 
+    https://1984.lsi.us.es/wiki-egc/index.php/Tutorial_configurando_vagrant_para_una_aplicaci%C3%B3n
+	
+	
+	
+
+-------
+VAGRANT
+-------
+Inicializar un entorno de Vagrant a partir de una box base (CREAR UN VAGRANTFILE):
+	Estamos dentro del directorio que queremos (NO venv). Solo puede haber un vagrantfile por directorio.
+	~$  vagrant init <BASE_BOX_NAME>	// p.ej.: vagrant init ubuntu/trusty32
+
+Levantar MV de Vagrant:
+	Estamos en el directorio que queremos el cual ya tiene un vagrantfile.
+	~$  vagrant up
+	(aquí es cuando se descarga la box necesaria para construir la MV)
+Entrar MV de Vagrant:
+	~$  vagrant ssh		// si pide contraseña: vagrant
+Salir MV de Vagrant:
+	~$  exit
+Refrescar MV de Vagrant para aplicar cambios nuevos:
+	~$  vagrant reload
+Apagar MV de Vagrant:
+	~$  vagrant halt
+	Si queremos volver, hacemos up otra vez.
+Destruir MV de Vagrant:
+	~$  vagrant destroy
+
+
+
+Ver datos de mi máquina real (host):
+	~$  hostnamectl
+Ver datos de máquina virtual (guest):
+	Vamos a entrar con vagrant ssh, hacemos hostnamectl para ver los datos, y nos volvemos al host con -c.
+	~$  vagrant ssh -c 'hostnamectl'
+	
+	
+	
+Ver status de todas las máquinas virtuales del sistema:
+	~$  vagrant global-status
+Ver lista de todas las máquinas virtuales del sistema:
+	~$  vagrant box list	
+Eliminar una box si hicera falta:
+	~$  vagrant box remove <BOX_NAME>
+	
+	
+
+
+------------------
+CARPETA COMPARTIDA
+------------------
+Al hacer  vagrant init  , se crea un directorio compartido entre el host y la MV.
+En el vagrantfile tenemos estas líneas:
+	# Carpeta compartida entre la máquina host y la máquina virtual
+  	config.vm.synced_folder ".", "/vagrant"
+  	
+Para el host: directorio ".", es decir en el que se halla hecho  vagrant init.
+Para la VM: directorio "/vagrant", es decir, el raíz, más /vagrant.
+
+Podemos poner los directorios que queramos, pero esos son convenciones.
+
+
+
+
+----------------------------------
+APROVISIONAMIENTO MEDIANTE SCRIPTS
+----------------------------------
+Ejecutar script de shell:
+	En principio:
+	~$  sh <SCRIPT_FILE_NAME>.sh
+	Si no va:
+	~$  bash <SCRIPT_FILE_NAME>.sh
+
+
+...
+Unos problemas en la práctica 6 al aprovisionar con Ansible:
+Al ejecutarlo, problema de trailing dot, la sentencia sql está mal formada.
+La primera tarea donde se lee las variables de entorno no está funcionando, por lo que no carga las variables de entorno de sql.
+Podemos entrar en la carpeta compartida con dos playbooks alternativos.
+Bueno, al final nada funciona. Ignorar y ya.
+
+
+
+
+
+-------
+ENLACES
+-------
+https://1984.lsi.us.es/wiki-egc/index.php/Tutorial_Campo_de_entrenamiento_de_Vagrant
+https://1984.lsi.us.es/wiki-egc/index.php/Tutorial_configurando_vagrant_para_una_aplicaci%C3%B3n
+https://docs.uvlhub.io/installation/installation_with_vagrant

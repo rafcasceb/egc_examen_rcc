@@ -1,0 +1,16 @@
+B
+- Modificar workflows para solo pasar pruebas de módulo x
+- Modificar workflow para que solo se ejecute tras cambio en rama main
+- Modificar workflow para lanzar pruebas en versiones de python 3.10.12 y 3.11
+- Crear workflow para lanzar release automáticamente
+- Modificar workflow para eliminar integración con Codacy
+- Modificar workflow para lanzar tests sin cobertura
+- Modificar workflow para lanzar sobre Ubuntu 22.04 en vez de la última versión
+- Modificar workflow para que la integración con Codacy sea un nuevo job llamado "Cobertura".
+ 
+C
+- Cambiar puerto de despliegue de Docker
+
+D
+- Modificar puerto de acceso de Vagrant
+- Modificar aprovisionamiento de Ansible

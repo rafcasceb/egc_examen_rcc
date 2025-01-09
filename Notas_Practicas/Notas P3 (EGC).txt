@@ -1,0 +1,201 @@
+------------
+TERMINOLOGÍA
+------------
+Remota/Origen/Remote/Origin = rama en el repositorio remoto
+Local = rama en el repositorio local
+Emisora/Fuente/Emitting/Source = rama que va a transmitir los cambios
+Receptora/Receiving = rama que va a recibir los cambios
+Madre = rama de la que parte otra
+Hija = rama que parte de otra
+
+
+
+------
+COMMIT
+------
+Commitear y se nos abre pantalla para escribir mensaje:
+	~$  git commit
+Commitear del tirón poniendo directamente el título: 
+	~$  git commit -m "<COMMIT_TITLE>"
+
+Amend último commit:
+	~$  git commit --amend
+	Se abre un editor para elegir qué cambiar (título, contenido, etc.)
+Podemos directamente cambiar el título:
+	~$  git commit --amend -m "<COMMIT_TITLE>"
+
+
+
+
+-----------------
+CREACIÓN DE RAMAS
+-----------------
+Crear rama nueva en local:
+	~$  git branch <NEW_BRANCH_NAME>
+Cambiar de rama:
+	~$  git checkout <NEW_BRANCH_NAME>
+Crear rama nueva en local y cambiar directamente a ella:
+	~$  git checkout -b <NEW_BRANCH_NAME>
+	
+
+
+----
+PUSH
+----
+Pushear rama (general). Si no existe se creará
+	~$  git push origin <REMOTE_BRANCH_NAME>
+	
+Configurar que rama local siempre vaya a cierta rama remota. Sino existe se creará
+	~$  git push -u origin <REMOTE_BRANCH_NAME>
+	A partir de ahora, simplemente:
+	~$  git push
+
+
+
+------------
+LISTAR RAMAS
+------------
+Listar ramas locales:
+	~$  git branch
+Listar ramas remotas:
+	~$  git branch -r
+Listar ramas locales y remotas
+	~$  git branch -a	
+
+
+
+---------------------------
+MERGE, REBASE Y CHERRY PICK
+---------------------------
+Hacer merge (se trae toda la rama emisora):
+	Estamos en la rama receptora.
+	~$  git merge <EMITTING_BRANCH_NAME>
+
+Hacer cherry pick (se trae ciertos commits en específico):
+	Estamos en la rama receptora.
+	~$  git cherry-pick <COMMIT_HASH_1> <COMMIT_HASH_2> <...>
+
+Hacer rebase (se trae la rama emisora pero superponiendo los commits al final):
+	Estamos en la rama receptora.
+	~$  git rebase <EMITTING_BRANCH_NAME>
+	Se puede hacer interactivo. Leer aquí mucho mejor: https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase
+	
+
+Explicación: merge fast forwarding
+ Si la madre no ha tenido cambios, D y E aparecen tal cual en ella.
+	 madre:  A  ----------->  D -> E
+	 hija:    \ -> D -> E -> / 
+
+Explicación: merge no fast forwarding
+ Si la rama madre ha tenido cambios, se crea un merge commit E' que dentro incluye los cambios de D y E.
+	madre:  A  -> B -> C ->  E'
+	hija:    \ -> D -> E -> / 
+ 
+Explicación: rebase
+ Aunque la rama madre haya tenido cambios, hace que D y E aparezcan explícitamente en la madre. Esto se considera cambiar el historial. Mucho cuidado con Rebase.
+	madre:  A  -> B -> C ->  D' -> E'
+	hija:    \ -> D -> E -> /
+	
+	
+	
+	
+-----
+RESET
+-----
+Descommitea todos los cambios a partir de un cierto commit. Mejor para local.
+
+Borrar todo tras un commit, pero deja todos esos cambios en el Staging Area.
+	~$  git reset --soft <COMMIT_HASH>
+Borrar todo tras un commit, pero deja todos esos cambios en el Working Tree (unstaged)
+	~$  git reset --mixed <COMMIT_HASH>
+Borrar todo tras un commit, y no deja rastro ninguno de ellos en Staging Area ni en Working Tree (unstaged)
+	~$  git reset --hard <COMMIT_HASH>
+
+
+
+---
+LOG
+---
+Nos muestra el historial.
+~$  git log
+~$  git log --oneline		// este es bueno para coger los hashs
+~$  git log --graph --oneline
+~$  git log --pretty=short
+~$  git log --pretty=oneline
+
+Para salir a lo mejor tenemos que darle a tecla "q".
+
+
+
+------
+STATUS
+------
+Nos muestra la situación actual.
+~$ git status
+
+
+
+------
+REVERT
+------
+"Borrar" un commit sin alterar el historial. Se crea un commit nuevo que invierte los cambios del commit deseado, pero éste permanece. Va bien en remoto.
+~$  git revert <COMMIT_HASH>
+
+(Me va a salir una terminal. Le tengo que dar a ctrl+x para salir. Entonces me pregunta si quiero confirmar o no los cambios. Le doy a tecla "s".
+
+
+
+----
+DIFF
+----
+Ver diferencias entre los cambios staged (added) y los cambios no staged:
+	~$  git diff
+Ver diferencias entre los cambios staged y el último commit:
+	~$  git --staged
+Ver diferencias entre commits:
+	~$  git <COMMIT_HASH_1> <COMMIT_HASH_2>
+Ver diferencias entre ramas:
+	~$  git <BRANCH_NAME_1> <BRANCH_NAME_2>
+	
+
+
+----
+PATCH
+----
+A partir de un diff se puede generar un archivo que incluye las modificaciones correspondientes llamado patch. Este archivo parche se puede luego aplicar.
+
+Generar parche con cambios actuales:
+	~$  git diff > <PATCH_FILE_NAME>.patch		// p.ej.: changes.patch
+Generar parche con la diferencia entre dos ramas:
+	~$  git diff branch1..branch2 > <PATCH_FILE_NAME>.patch	
+
+Aplicar parche:
+	Estamos en la rama que queremos.
+	~$  git apply <FILE_NAME>.patch
+
+
+
+-----
+STASH
+-----
+Permite guardar un conjunto de cambios staged (git add) en una memoria local temporal, pudiendo cambiar de rama sin perderlos pero sin comiterarlos.
+
+Guardar los cambios staged con nombre genérico:
+	~$  git stash
+	Se guardan con un nombre genérico: "WIP", rama y último commit.
+Guardar los cambios staged con nombre que queramos:
+	~$  git stash save "<STASH_NAME>"
+
+Ver la lista de los stash guardados:
+	Se van añadiendo arriba de los anteriores.
+	~$  git stash list
+
+Aplicar un stash sin eliminarlo de la lista:
+	~$  git stash apply stash@{<STASH_ID>}		// para aplicar el último: ~$  git stash apply
+Aplicar un stash eliminándolo de la lista:
+	~$  git stash pop stash@{<STASH_ID>}		// para aplicar el último: ~$  git stash pop
+
+MUCHO CUIDADO CON APLICAR STASH EN UN ORDEN SIN SENTIDO. SI APLICAMOS UNO QUE MODIFICA UN DOC ANTES DE APLICAR EL QUE LO HA CREADO, CAGADA.
+	
+Eliminar un stash de la lista sin aplicarlo:
+	~$  git stash drop stash@{<STASH_ID>}

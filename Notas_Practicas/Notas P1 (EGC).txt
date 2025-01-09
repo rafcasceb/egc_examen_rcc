@@ -1,0 +1,46 @@
+1. Configurar Git en local:
+	~$  sudo apt install git	// comprobar que está instalado
+	Ir a directorio que queramos.
+	~$  git config --global user.name "Rafael Castillo Cebolla"
+	~$  git config --global user.email rafaelcastillocebolla@gmail.com
+	~$  git config --list		// para comprobar que ha funcionado
+
+
+
+2. Generar y guardar clave SSH:
+	La clave SSH es única para cada dispositivo y tiene que estar guardada en él y en la cuenta de GitHub. Una cuenta puede tener varias claves.
+	Haber configurado Git en local (paso anterior).
+	
+	Generar clave:
+		~$  ssh-keygen -t rsa -b 4096
+		A todo lo que nos pregunte, darle a Enter.
+	Ver clave pública en PC:
+		~$  cd ~/.ssh
+		~$  cat id_rsa.pub
+	Copiar clave a mano.
+	Guardarla en GitHub: GitHub -> Settings -> SSH and GPG keys -> New SSH key -> Pegar clave pública
+
+
+
+3. Para clonar con SSH:
+	Para poder hacer push desde la terminal necesitamos clonar con SSH.
+	Haber configurado SSH (paso anterior).
+	
+	~$  cd Escritorio	// o lo que sea
+	Copiar enlace SSH del repositorio (el SSH, no el normal):
+		~$  git clone <REPO_SSH_LINK>		// en principio sería algo como git@github.com:rafcasceb/uvlhub_practicas.git
+	
+	
+	
+4. Para hacer push desde la terminal:
+	Haber configurado SSH y clonado mediante SSH (paso anterior).
+	
+	~$  cd Escritorio/uvlhub_practicas
+	~$  git diff		// para ver las diferencias
+	~$  git add -a		// ~$  git add .   no incluye las eliminaciones
+	~$  git commit -m "<COMMIT_MESSAGE>"
+	~$  git push origin <BRANCH_NAME>
+	
+	
+	
+https://docs.uvlhub.io/installation/manual_installation

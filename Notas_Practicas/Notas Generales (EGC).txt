@@ -1,0 +1,64 @@
+"Atom Dark Pro" extensión para VSCode
+
+------
+UVLHub
+------
+Contraseña MariaDB de UVLHub:
+	~$  uvlhubdb_root_password
+	
+Lanzar aplicación de UVLHub:
+	~$  flask run --host=0.0.0.0 --reload --debug
+	http://localhost:5000
+	(Antes a lo mejor hay que hacer reinstalar las dependencias, hacer rosemary db:reset y rosemary db:migrate)
+
+Usuario genérico de UVLHub:
+	User: user1@example.com
+	Pass: 1234
+
+
+
+
+---------
+GENERALES
+---------
+Crear entorno virtual llamado:
+	~$  python3.12 -m venv <MY_VENV_NAME>
+	Un venv va asociado a un direcotrio en particular.
+	Convención de llamarlo "venv".
+Para activar el entorno virtual que creé llamado "venv":
+	Estar en el directorio al que pertenece.
+	~$  source venv/bin/activate
+Para desactivarlo:
+	~$  deactivate
+
+
+Cambiar directorio:
+	Son sensibles a las mayúsculas.
+	Tanto al hacer cd como en git checkout, mientras escribioms, si le damos al tabulador, se nos autocompletará con el directorio o rama que cuadre.
+	Cambio normal:
+		~$  cd Escritorio
+	Cambiar al directorio base:
+		~$  cd ~	// o simplemente  cd
+	Cambiar al directorio anterior:
+		~$  cd -
+	Cambiar al directorio superior:
+		~$  cd ..
+	
+	
+Para encontrar un commit por un nombre dado:
+	~$  git show :/<COMMIT_MESSAGE>		// sin comillas
+	
+	
+Para darle permisos de ejecutable a un hook
+	Estar la carpeta del repositorio local.
+	Para dárselo a uno en específico:
+	~$  chmod ug+x .git/hooks/<nombre_hook>		// u=user, g=group, o=other  +  r=read, w=write, x=execute
+	Para dárselos a todos:
+	~$  chmod ug+x .git/hooks/*
+	
+	
+Para instalar bien las dependencias:
+	~$  pip install -r requirements.txt		// si salta error de managed externally, esperemos que no, añadir --break-system-packages
+	~$  pip install -e ./				// aquí igual
+	
+

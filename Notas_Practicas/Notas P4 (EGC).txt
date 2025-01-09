@@ -1,0 +1,97 @@
+-----------------------
+USAR PROYECTO DE PRUEBA
+-----------------------
+https://1984.lsi.us.es/wiki-egc/index.php/Tutorial_Campo_de_entrenamiento
+
+
+0. Configuraciones previas
+ No sé de dónde hemos sacado el repositorio éste, pero bueno, que hay que clonar un repositorio llamado 'Flask Testing Project'.
+ TODO ESTO ES EN PROYECTITO CHICO DE FLASK. LUEGO EN EL PROYECTO PRINCIPAL SE HARÁ UN POCO DIFERENTE. POR EJEMPLO, NO SE LANZARÁ CON EL PYTHON APP.PY, SINO CON LO QUE YA SABEMOS.
+
+ Entorno virtual venv.
+ Instalo las dependencias que dice.
+ Crear los archivos que dice al principio.
+ Lanzar aplicación:
+	~$   python app.py
+ Dejamos esa terminal abierta, y usaremos otras para lo siguiente.
+
+
+1. Pruebas unitarias (unitarias y de integración creo, pero bueno)
+ Ejecutar las pruebas
+	~$  pytest
+ Tendríamos que estar usando   ~$ PYTHONPATH=. pytest   cada vez, pero hemos hecho un truco: hemos creado en el directorio raíz un archivo pytest.ini con el siguiente contenido:
+	[pytest]
+	pythonpath=.
+
+		
+2. Cobertura de pruebas
+ Ejecutar cobertura de pruebas
+	~$  pytest --cov=app <TESTS_DIRECTORY>		// p.ej.:  pytest --cov=app tests/
+ Más detallado aún con:
+	~$  pytest --cov=app --cov-report=html <TESTS_DIRECTORY>
+ Esto genera un informe. Para visualizarlo.
+	~$  xdg-open htmlcov/index.html
+	
+
+3. Tests de Selenium	
+ Instalar Chrome:
+ 	https://www.xda-developers.com/how-install-chrome-ubuntu/
+	Descargar instalador de Chrome desde terminal:
+	~$  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+	Lo metemos en el directorio raíz del proyecto:
+	~$  sudo dpkg -i google-chrome-stable_current_amd64.deb
+	Ya podemos borrar el instalador.
+ Instalar Chromium:
+	Las dos primeras no sé.
+	(~$  sudo apt install chromium-browser)
+	(~$  sudo apt install chromium-driver)
+	~$  pip install webdriver-manager
+	
+ Ejecutar un test de Selenium:
+ 	~$  pytest -s <DIRECTORY/TEST_NAME>		// p.ej.:  pytest -s tests/test_selenium.py		// la -s es de "show output" (los prints que hayamos puesto)
+	
+ Grabar mis tests de Selenium: [...]. Hacerlo en Chrome, ya que he instalado Chrome y configurado los tests en Chrome. Instalar extensión de Selenium en Chrome.
+ Ejecutar tests de Selenium (IDE esta vez, pero parece que no hay diferencia):
+	~$  pytest tests/test_selenium_ide.py
+
+
+4. Ejecutar tests de Locust (pruebas de carga):
+ El locustfile.py incluye un test de carga.
+ Hay que tener ejecutándose una instancia del programa. Es decir que corramos flask... en una terminal y en otra hagamos esto.
+	~$  locust -f locustfile.py
+ Abrir http://localhost:8089 (lo que ponga), configurarle unos cuantos usuarios y la URL http://localhost:5000 (que es donde se está ejecutando la aplicación que queremos evaluar).
+
+	
+	
+	
+	
+
+----------------------------------
+AHORA A CREAR LOS TEST PARA UVLHUB
+----------------------------------
+https://docs.uvlhub.io/rosemary/testing
+Estamos dentro de uvlhub y del venv. Guías básicas; luego hay más opciones.
+
+1. Unit tests
+ De nuevo, tanto los unit como los integration.
+	~$  rosemary test
+ Para solo un módulo:
+	~$  rosemary test <MODULE_NAME>	 // esto de solo para un módulo vale también para todos los siguientes
+
+	
+2. Coverage tests
+	~$  rosemary coverage
+
+	
+3. Load tests (Locust)
+ Las pruebas de load. El archvio locustfile.py es una prueba de carga. Recuerda correr el programa en otra terminal aparte.
+	~$  rosemary locust
+ Luego hay que pararlo. Si se modifican también hay que pararlo y relanzarlo.
+	~$  rosemary locust:stop
+	
+
+4. GUI tests (Selenium)
+ Ejecutar tests.
+	~$  rosemary selenium
+ Si no funciona. A la manera clásica de antes lo podemos hacer. Ejemplo de test en particular del proyecto.
+	~$  pytest -s app/modules/notepad/tests/test_selenium.py 

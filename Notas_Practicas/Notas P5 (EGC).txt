@@ -1,0 +1,155 @@
+-----------------------
+LANZAR Y DETENER DOCKER
+-----------------------
+Una vez instalado el software de Docker, se puede lanzar con:
+	~$  sudo systemctl start docker
+Estará en continua ejecución hasta que detengamos sus dos procesos:
+	~$  sudo systemctl stop docker.socket docker
+
+
+
+--------
+IMÁGENES
+--------
+Las imágenes de Docker se pueden descargar directamente al sistema o tenerlas definidas en un archivo dockerfile.
+
+Ver imágenes disponibles en el sistema:
+	~$  docker images
+	
+Descargar una imagen del dockerhub.
+	~$  docker pull <IMAGE_NAME>
+
+Borrar una imagen del sistema:
+	~$  docker rmi <IMAGE_ID>	
+	
+Para construir una imgaen nueva (a partir de un dockerfile desde la carpeta):
+	~$  docker build -t <WANTED_IMAGE_NAME>	   // el -t seguramente sea opcional  // el nombre le ponemos el que queramos
+
+	
+	
+------------	
+CONTENEDORES
+------------
+Un contenedor es una instancia ejecutable de una imagen.
+Crear un contenedor a partir de una imagen descargada:
+	~$  docker run <IMAGE_NAME>
+Se puede definir el puerto:
+	~$  docker run -p <CONTAINER_PORT>:<HOST_PORT> <IMAGE_NAME>	// docker run -p 5000:5000 flask-testing_project
+	El puerto de imagen está definido en dockerfile si tenemos, y el host de la aplicación, en el app.py.
+
+Ver contenedores en el sistema:
+	~$  docker ps -a
+Ver contenedores activos en el sistema:
+	~$  docker ps
+	
+Parar contenedor activo:
+	~$  docker stop <CONTAINER_ID>
+	O con el nombre:
+	~$  docker stop <CONTAINER_NAME>
+	
+Eliminar contenedor:
+	~$  docker rm <CONTAINER_ID>
+	
+
+
+Trabajar en un contenedor de forma interactiva. Puedes acceder a una terminal dentro del contenedor como si fuera su propio sistema.
+Util con imágenes como Ubuntu (una imagen que simula Ubuntu).
+	~$  docker run -it <IMAGE_NAME> bash
+Para salir (seguirá ejecutándose):
+	~$  exit
+	
+	
+Ejecutar y mantener un servidor en segundo plano:
+	~$  docker run -td <IMAGE_NAME> bash		// p.ej.: ubuntu	
+Para acceder a él:
+	~$  docker exec -ti <CONTAINER_ID> bash
+		
+	
+
+Para probar Bind mounts con la imagen de nginx, para usar htmls pesonalizados:
+	Creamos una carpeta donde sea (que el directorio no tenga espacios de por medio). Guardamos ahí un .html.
+		/home/rafael/Escritorio/EGC_Docs/site-content
+	Descargamos la imagen de nginx.
+		~$  docker pull nginx		// creo
+	Creamos un contenedor de nginx y hacemos bind del directorio local con nginx:
+		~$  docker run -it --rm -d -p 8080:80 --name web -v <LOCAL_DIRECTORY_WITH_HTMLS>:/usr/share/nginx/html nginx
+		Específicamente sería (cuidado con los dos puntos):
+		~$  docker run -it --rm -d -p 8080:80 --name web -v /home/rafael/Escritorio/EGC_Docs/site-content:/usr/share/nginx/html nginx
+	Nos vamos al http://localhost:8080 para ver el html. Recuerda luego detener el contenedor.
+		
+
+
+
+
+---------
+VOLÚMENES
+---------
+Los volúmenes permiten que los datos usados por un contenedor persistan más allá del ciclo de vida del contenedor. Si detienes o eliminas el contenedor, los archivos que colocaste en un volumen seguirán estando disponibles.
+
+Crear un volumen:
+	~$  docker volume create <VOLUME_NAME>
+Igual que hicioms antes con Bind mount para el directorio local, hacemos ahora con el contenedor. Mismo comando pero con el nombre del contenedor en vez del directorio:
+	~$  docker run -it --rm -d -p 8080:80 --name web -v <VOLUME_NAME>:/usr/share/nginx/html nginx
+Acceder a la terminal del volumen:
+	~$  docker exec -it web sh
+Podemos crear un html dentro, tal y como hicimos con el directorio:
+	~$ echo "<!doctype html><html lang='en'><head><meta charset='utf-8'><title>Docker Nginx</title></head><body><h2>Hello from Nginx Volume</h2></body></html>" > /usr/share/nginx/html/index.html
+Nos vamos al http://localhost:8080 para ver el html.
+	
+	
+	
+	
+	
+-------------------------------	
+DOCKERIZAR UNA APLICACIÓN FLASK
+-------------------------------
+(sin entorno virtual creo)
+DOCKER NORMAL:
+	Creamos en la carpeta raíz del proyecto un archivo llamado 'Dockerfile' en el que definimos la imagen docker.
+	En la terminal vamos al directorio del proyecto.
+
+	Construimos la imagen y le asignamos un nombre:
+		~$  docker build -t <WANTED_IMAGE_NAME> .	// nombre por ejemplo: flask-testing_project
+
+	Crear contenedor a partir de la imagen (mapeamos el puerto 5000 del contenedor al 5000 del host; podría ser otro puerto)
+		~$  docker run -p 5000:5000 <IMAGE_NAME>
+		Accesible en  localhost:5000
+	
+
+DOCKER COMPOSE (para unirlo con una BD por ejemplo):
+	Definimos el docker-compose.yml y modfiicamos el app.py.
+	Para construir y ejecutar el contenedor:
+		~$  docker compose up
+	Accesible en  localhost:5000
+	Para parar y eliminar los contenedores:
+		~$  docker compose down
+
+
+
+
+
+----------------
+DOCKER POR CAPAS
+----------------
+Inspeccionando una imagen podemos ver el detalle de sus capas:
+	~$  docker inspect <IMAGE_ID>
+En el historial de una imagen podemos ver el historial de sus capas:
+	~$  docker history <IMAGE_ID>
+Para limpiar capas no usadas:
+	~$  docker image prune
+
+Docker por defecto construye imágenes nuevas usando caché. A veces esto hace que no se apliquen cambios recientes en las capas.
+Podemos contruir sin caché:
+	~$  docker build --no-cache -t <IMAGE_NAME> .
+
+
+
+
+
+
+-------
+ENLACES
+-------
+https://1984.lsi.us.es/wiki-egc/index.php/Tutorial_Campo_de_entrenamiento_de_Docker
+https://1984.lsi.us.es/wiki-egc/index.php/Tutorial_Dockerizando_una_aplicaci%C3%B3n
+https://docs.uvlhub.io/installation/installation_with_docker
