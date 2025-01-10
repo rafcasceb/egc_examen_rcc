@@ -7,8 +7,10 @@ Para ver las explicaciones línea por línea de vagrantfiles, de scripts de shel
 -------
 VAGRANT
 -------
+Solo puede haber un vagrantfile por directorio. Por eso, no hace falta especificar nombres de MV ni nada, porque siempre coge la del directorio actual.
+
 Inicializar un entorno de Vagrant a partir de una box base (CREAR UN VAGRANTFILE):
-	Estamos dentro del directorio que queremos (NO venv). Solo puede haber un vagrantfile por directorio.
+	Estamos dentro del directorio que queremos (FUERA DEL VENV).
 	~$  vagrant init <BASE_BOX_NAME>	// p.ej.: vagrant init ubuntu/trusty32
 
 Levantar MV de Vagrant:
@@ -25,21 +27,27 @@ Apagar MV de Vagrant:
 	~$  vagrant halt
 	Si queremos volver, hacemos up otra vez.
 Destruir MV de Vagrant:
-	~$  vagrant destroy
+	~$  vagrant destroy <VAGRANT_MV_ID>	// los IDs se puede ver con unos comandos que aparecen abajo
+(Destruir todas las MV de Vagrant (creo):)
+	~$  vagrant destroys	
 
 
 
 Ver datos de mi máquina real (host):
 	~$  hostnamectl
-Ver datos de máquina virtual (guest):
-	Vamos a entrar con vagrant ssh, hacemos hostnamectl para ver los datos, y nos volvemos al host con -c.
-	~$  vagrant ssh -c 'hostnamectl'
+Ver datos de MV (guest):
+	~$  vagrant ssh
+	Estamos dentro.
+	~$  hostnamectl
+	~$  exit
+Ver datos de MV y salr en un solo coando.
+	~$  vagrant ssh -c 'hostnamectl'	// con -c nos volvemos al hosts
 	
 	
 	
-Ver status de todas las máquinas virtuales del sistema:
+Ver status de todas las MVs del sistema:
 	~$  vagrant global-status
-Ver lista de todas las máquinas virtuales del sistema:
+Ver lista de todas las MVs del sistema:
 	~$  vagrant box list	
 Eliminar una box si hicera falta:
 	~$  vagrant box remove <BOX_NAME>
